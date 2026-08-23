@@ -1,0 +1,41 @@
+{
+  "name": "@arthur.eudeline/rendu",
+  "version": "0.1.0",
+  "description": "CLI permettant aux étudiants de créer des archives ZIP de leurs rendus de travaux pratiques.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Arthur Eudeline <contact@arthur-eudeline.com>",
+  "bin": {
+    "rendu": "bin/rendu.js"
+  },
+  "files": [
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun scripts/build.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "optionalDependencies": {
+    "@arthur.eudeline/rendu-darwin-arm64": "0.1.0",
+    "@arthur.eudeline/rendu-darwin-x64": "0.1.0",
+    "@arthur.eudeline/rendu-linux-arm64": "0.1.0",
+    "@arthur.eudeline/rendu-linux-x64": "0.1.0",
+    "@arthur.eudeline/rendu-win32-x64": "0.1.0"
+  },
+  "devDependencies": {
+    "@clack/prompts": "^1.7.0",
+    "@types/bun": "^1.4.0",
+    "chalk": "^6.0.0",
+    "commander": "^15.0.0",
+    "effect": "^3.22.1",
+    "ignore": "^7.0.6",
+    "jszip": "^3.10.1",
+    "typescript": "^7.0.2",
+    "zod": "^4.4.3"
+  }
+}

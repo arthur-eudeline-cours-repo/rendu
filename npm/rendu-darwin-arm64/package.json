@@ -1,0 +1,12 @@
+{
+  "name": "@arthur.eudeline/rendu-darwin-arm64",
+  "version": "0.1.0",
+  "description": "Binaire natif de Rendu pour darwin/arm64.",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "license": "MIT"
+}

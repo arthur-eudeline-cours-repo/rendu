@@ -1,0 +1,12 @@
+{
+  "name": "@arthur.eudeline/rendu-win32-x64",
+  "version": "0.1.0",
+  "description": "Binaire natif de Rendu pour win32/x64.",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "license": "MIT"
+}
