@@ -18,29 +18,72 @@ export const RENDU_FILE_TEMPLATE = `# Pointe vers un fichier à la racine du ré
 # Si ce fichier n'existe pas, une erreur est générée.
 root: package.json
 
-# Fichiers à inclure dans le rendu (motifs façon .gitignore)
+# Fichiers et dossiers à inclure dans le rendu (motifs façon .gitignore).
 include:
   - "*"
 
-# Fichiers à ignorer pour le rendu (motifs façon .gitignore)
+# Fichiers et dossiers à exclure du rendu (motifs façon .gitignore, récursifs :
+# un motif sans "/" au début ou au milieu s'applique à n'importe quelle
+# profondeur). Les artefacts courants sont déjà exclus d'office : node_modules,
+# dist, build, .git, .env, .DS_Store, .idea, .vscode, .claude, *.log, *.zip…
 exclude:
-  - node_modules
-  - vendor
-  - .git
-  - .next
+  - node_modules"
 `;
 
 /**
  * Motifs toujours exclus, quoi qu'il arrive : ni `.gitignore` ni `.rendu.yml`
- * ne peuvent les réintégrer.
+ * (via `include`) ne peuvent les réintégrer. Syntaxe `.gitignore` : les motifs
+ * sans `/` initial s'appliquent récursivement, à n'importe quelle profondeur.
  */
 const HARD_IGNORES = [
+  // Rendu & gestion de versions
   ".git/",
   ".gitignore",
+  ".gitattributes",
+  ".hg/",
+  ".svn/",
   RENDU_FILE,
+  // Dépendances & artefacts de build
   "node_modules/",
-  "*.zip",
+  "vendor/",
+  "bower_components/",
+  "dist/",
+  "build/",
+  "out/",
+  "target/",
+  ".next/",
+  ".nuxt/",
+  ".svelte-kit/",
+  ".turbo/",
+  ".parcel-cache/",
+  ".cache/",
+  "coverage/",
+  "__pycache__/",
+  ".venv/",
+  "venv/",
+  // Éditeurs, IDE & outils
+  ".vscode/",
+  ".idea/",
+  ".claude/",
+  ".cursor/",
+  ".zed/",
+  "*.swp",
+  "*~",
+  // Fichiers système
   ".DS_Store",
+  ".AppleDouble",
+  "Thumbs.db",
+  "desktop.ini",
+  // Secrets & journaux
+  ".env",
+  ".env.*",
+  "*.log",
+  // Archives
+  "*.zip",
+  "*.tar",
+  "*.tar.gz",
+  "*.tgz",
+  "*.rar",
 ];
 
 /**
@@ -61,14 +104,14 @@ export const RenduFileSchema = z
      * Fichier ou dossier qui doit exister dans le dossier fourni par l'étudiant.
      * Sert de garde-fou : s'il est absent, on refuse l'archive (mauvais dossier).
      */
-    root: z.string().min(1, "`root` ne peut pas être vide").optional(),
+    root: z.string().min(1, "`root` ne peut pas être vide").nullish(),
     /**
      * Motifs (syntaxe `.gitignore`) agissant comme liste blanche : s'ils sont
      * renseignés, seuls les fichiers correspondants sont archivés.
      */
-    include: z.array(z.string().min(1)).optional(),
+    include: z.array(z.string().min(1)).nullish(),
     /** Motifs (syntaxe `.gitignore`) exclus en plus du `.gitignore`. */
-    exclude: z.array(z.string().min(1)).optional(),
+    exclude: z.array(z.string().min(1)).nullish(),
   })
   .strict();
 

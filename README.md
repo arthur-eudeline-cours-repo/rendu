@@ -18,8 +18,10 @@ mémorisée dans votre dossier personnel.
   entrées facultatives : `root` (garde-fou), `include` (liste blanche) et
   `exclude` (exclusions supplémentaires). Voir
   [Choisir ce qui entre dans l'archive](#choisir-ce-qui-entre-dans-larchive).
-- Toujours exclus : `.git/`, `.gitignore`, `.rendu.yml`, `node_modules/`,
-  `*.zip`, `.DS_Store`.
+- Un jeu de **motifs toujours exclus** (récursivement) est retiré de toute
+  archive : `.git/`, `node_modules/`, `dist/`, `build/`, `.env`, `.vscode/`,
+  `.idea/`, `.claude/`, `.DS_Store`, `*.log`, `*.zip`… — voir
+  [Motifs toujours exclus](#motifs-toujours-exclus) pour la liste complète.
 - Prompts interactifs et lisibles.
 
 ## Installation
@@ -72,8 +74,25 @@ inclus, en appliquant les mêmes règles que la création.
 ### Choisir ce qui entre dans l'archive
 
 Par défaut, tout le contenu du dossier est archivé, à l'exception de ce que le
-`.gitignore` du dossier exclut et des motifs toujours exclus (`.git/`,
-`.gitignore`, `.rendu.yml`, `node_modules/`, `*.zip`, `.DS_Store`).
+`.gitignore` du dossier exclut et des **motifs toujours exclus** ci-dessous.
+
+#### Motifs toujours exclus
+
+Ces motifs sont retirés de **toute** archive, **récursivement** (à n'importe
+quelle profondeur) et sans qu'`include` puisse les réintégrer. Ils
+correspondent à la constante `HARD_IGNORES` de
+[`src/lib/rendufile.ts`](src/lib/rendufile.ts).
+
+| Catégorie                        | Motifs                                                                                                                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rendu & gestion de versions      | `.git/`, `.gitignore`, `.gitattributes`, `.hg/`, `.svn/`, `.rendu.yml`                                                                                                       |
+| Dépendances & artefacts de build | `node_modules/`, `vendor/`, `bower_components/`, `dist/`, `build/`, `out/`, `target/`, `.next/`, `.nuxt/`, `.svelte-kit/`, `.turbo/`, `.parcel-cache/`, `.cache/`, `coverage/`, `__pycache__/`, `.venv/`, `venv/` |
+| Éditeurs, IDE & outils           | `.vscode/`, `.idea/`, `.claude/`, `.cursor/`, `.zed/`, `*.swp`, `*~`                                                                                                         |
+| Fichiers système                 | `.DS_Store`, `.AppleDouble`, `Thumbs.db`, `desktop.ini`                                                                                                                      |
+| Secrets & journaux               | `.env`, `.env.*`, `*.log`                                                                                                                                                    |
+| Archives                         | `*.zip`, `*.tar`, `*.tar.gz`, `*.tgz`, `*.rar`                                                                                                                               |
+
+#### Aller plus loin avec `.rendu.yml`
 
 Pour contrôler plus finement, placez un fichier **`.rendu.yml`** à la racine du
 dossier archivé. `rendu create` en génère un pré-rempli :
@@ -94,7 +113,11 @@ Les trois entrées sont **facultatives** :
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `root`    | Chemin (fichier ou dossier) qui **doit exister** dans le dossier fourni. Sinon `rendu` s'arrête : « ce n'est pas le bon dossier ». Simple garde-fou — sans effet sur le contenu réellement archivé. |
 | `include` | Liste de motifs façon `.gitignore`. Si elle est renseignée, elle agit comme **liste blanche** : seuls les fichiers correspondants sont archivés.                                                  |
-| `exclude` | Liste de motifs façon `.gitignore` retirés **en plus** du `.gitignore` et des motifs toujours exclus.                                                                                             |
+| `exclude` | Liste de motifs façon `.gitignore` retirés **en plus** du `.gitignore` et des motifs toujours exclus. Inutile d'y remettre les artefacts courants — ils sont déjà exclus d'office.                  |
+
+Les motifs suivent la syntaxe `.gitignore` : sans `/` au début ou au milieu, un
+motif s'applique **récursivement** à n'importe quelle profondeur (`node_modules`
+exclut aussi `packages/x/node_modules/`).
 
 Fichier généré par `rendu create` :
 
@@ -103,16 +126,16 @@ Fichier généré par `rendu create` :
 # Si ce fichier n'existe pas, une erreur est générée.
 root: package.json
 
-# Fichiers à inclure dans le rendu (motifs façon .gitignore)
+# Fichiers et dossiers à inclure dans le rendu (motifs façon .gitignore).
 include:
   - "*"
 
-# Fichiers à ignorer pour le rendu (motifs façon .gitignore)
+# Fichiers et dossiers à exclure du rendu (motifs façon .gitignore, récursifs).
+# Les artefacts courants sont déjà exclus d'office : node_modules, dist, build,
+# .git, .env, .DS_Store, .idea, .vscode, .claude, *.log, *.zip…
 exclude:
-  - node_modules
-  - vendor
-  - .git
-  - .next
+  - brouillon/
+  - "*.tmp"
 ```
 
 #### Ordre de priorité
