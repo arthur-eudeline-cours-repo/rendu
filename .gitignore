@@ -3,3 +3,6 @@ dist/
 npm/*/bin/
 *.zip
 .DS_Store
+
+# Tegami : verrou de publication transitoire (la publication réelle passe par scripts/publish.ts)
+.tegami/publish-lock.yaml

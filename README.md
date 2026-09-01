@@ -19,7 +19,7 @@ mémorisée dans votre dossier personnel.
   (et jamais ceux exclus par `.gitignore`).
 - Toujours exclus : `.git/`, `.gitignore`, `.rendu`, `node_modules/`, `*.zip`,
   `.DS_Store`.
-- Prompts interactifs et lisibles (`@clack/prompts`).
+- Prompts interactifs et lisibles.
 
 ## Installation
 
@@ -105,28 +105,6 @@ Vérifie la dernière version publiée sur npm et, après confirmation, lance
 | `rendu config`   | Définit ou met à jour votre prénom / nom               |
 | `rendu upgrade`  | Met à jour le CLI vers la dernière version             |
 | `rendu -v`       | Affiche la version installée                           |
-
-## Développement
-
-Le projet utilise [Bun](https://bun.sh/), Commander en façade, Effect.ts pour la
-gestion des erreurs, Zod pour la validation et `@clack/prompts` pour l'interface.
-
-```bash
-bun install          # installer les dépendances
-bun run dev          # lancer le CLI depuis les sources (src/index.ts)
-bun test             # exécuter les tests
-bun run typecheck    # vérification TypeScript
-bun run build        # compiler les binaires natifs par plateforme
-```
-
-`bun run build` produit un exécutable standalone (`bun build --compile`) pour
-chaque plateforme dans `npm/rendu-<plateforme>/`. Ces sous-paquets sont
-référencés en `optionalDependencies` du paquet racine ; le lanceur
-[`bin/rendu.js`](bin/rendu.js) sélectionne le binaire correspondant au système
-de l'utilisateur au moment de l'exécution.
-
-Définissez `RENDU_SENTRY_DSN` avant le build pour activer la remontée d'erreurs
-(désactivée silencieusement sinon).
 
 ## Licence
 

@@ -74,6 +74,9 @@ for (const target of TARGETS) {
     name: `@arthur.eudeline/rendu-${target.suffix}`,
     version,
     description: `Binaire natif de Rendu pour ${target.os}/${target.cpu}.`,
+    // `files` garantit l'inclusion du binaire dans le tarball npm même si
+    // `npm/*/bin/` est ignoré par le .gitignore racine.
+    files: ["bin"],
     os: [target.os],
     cpu: [target.cpu],
     license: pkg.license,
