@@ -1,6 +1,7 @@
 import * as p from "@clack/prompts";
 import chalk from "chalk";
 import pkg from "../../package.json" with { type: "json" };
+import { flushSentry, reportError } from "../lib/sentry";
 
 const PACKAGE_NAME: string = pkg.name;
 
@@ -10,7 +11,8 @@ async function fetchLatestVersion(): Promise<string | undefined> {
     if (!response.ok) return undefined;
     const data = (await response.json()) as { version?: string };
     return data.version;
-  } catch {
+  } catch (error) {
+    reportError(error, { command: "upgrade", stage: "fetchLatestVersion" });
     return undefined;
   }
 }
@@ -26,6 +28,7 @@ export async function runUpgradeCommand(): Promise<void> {
 
   if (!latest) {
     spinner.error("Impossible de contacter le registre npm.");
+    await flushSentry();
     process.exit(1);
   }
 
@@ -59,6 +62,12 @@ export async function runUpgradeCommand(): Promise<void> {
   if (exitCode !== 0) {
     p.log.error(chalk.red(`Échec de la mise à jour (code ${exitCode}).`));
     p.log.error(chalk.red(`Essayez manuellement : npm install -g ${PACKAGE_NAME}@latest`));
+    reportError(new Error(`npm install exited with code ${exitCode}`), {
+      command: "upgrade",
+      stage: "npmInstall",
+      exitCode,
+    });
+    await flushSentry();
     process.exit(1);
   }
 

@@ -4,8 +4,12 @@
 // dans le sous-package @arthur.eudeline/rendu-<os>-<arch> (optionalDependency).
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
 const require_ = createRequire(import.meta.url);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const PLATFORM_PACKAGES = {
   "darwin-arm64": "@arthur.eudeline/rendu-darwin-arm64",
@@ -13,6 +17,14 @@ const PLATFORM_PACKAGES = {
   "linux-arm64": "@arthur.eudeline/rendu-linux-arm64",
   "linux-x64": "@arthur.eudeline/rendu-linux-x64",
   "win32-x64": "@arthur.eudeline/rendu-win32-x64",
+};
+
+const PLATFORM_DIRS = {
+  "darwin-arm64": "rendu-darwin-arm64",
+  "darwin-x64": "rendu-darwin-x64",
+  "linux-arm64": "rendu-linux-arm64",
+  "linux-x64": "rendu-linux-x64",
+  "win32-x64": "rendu-win32-x64",
 };
 
 const platformKey = `${process.platform}-${process.arch}`;
@@ -30,14 +42,22 @@ if (!packageName) {
 const binaryName = process.platform === "win32" ? "rendu.exe" : "rendu";
 
 let binaryPath;
-try {
-  binaryPath = require_.resolve(`${packageName}/bin/${binaryName}`);
-} catch {
-  console.error(
-    `rendu : le binaire natif "${packageName}" est introuvable.\n` +
-      "Essayez de réinstaller le paquet : npm install -g @arthur.eudeline/rendu",
-  );
-  process.exit(1);
+
+// En développement, cherche d'abord localement dans npm/
+const localBinaryPath = join(__dirname, "..", "npm", PLATFORM_DIRS[platformKey], "bin", binaryName);
+if (existsSync(localBinaryPath)) {
+  binaryPath = localBinaryPath;
+} else {
+  // En production, cherche dans les optionalDependencies
+  try {
+    binaryPath = require_.resolve(`${packageName}/bin/${binaryName}`);
+  } catch {
+    console.error(
+      `rendu : le binaire natif "${packageName}" est introuvable.\n` +
+        "Essayez de réinstaller le paquet : npm install -g @arthur.eudeline/rendu",
+    );
+    process.exit(1);
+  }
 }
 
 const result = spawnSync(binaryPath, process.argv.slice(2), { stdio: "inherit" });

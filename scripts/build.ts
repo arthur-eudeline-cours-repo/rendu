@@ -28,6 +28,16 @@ const TARGETS: Target[] = [
 const ROOT = join(import.meta.dir, "..");
 const version = pkg.version;
 
+// Le DSN Sentry est injecté en dur dans le binaire compilé (--define), car
+// les étudiants n'ont pas de variable d'environnement RENDU_SENTRY_DSN sur
+// leur poste. Sans elle, la remontée d'erreurs est silencieusement désactivée.
+const sentryDsn = process.env.RENDU_SENTRY_DSN;
+if (!sentryDsn) {
+  console.warn(
+    "⚠ RENDU_SENTRY_DSN non défini : la remontée d'erreurs Sentry sera désactivée dans ce build.",
+  );
+}
+
 for (const target of TARGETS) {
   const pkgDir = join(ROOT, "npm", `rendu-${target.suffix}`);
   const binDir = join(pkgDir, "bin");
@@ -43,6 +53,7 @@ for (const target of TARGETS) {
       "./src/index.ts",
       "--compile",
       `--target=${target.bunTarget}`,
+      ...(sentryDsn ? [`--define:process.env.RENDU_SENTRY_DSN=${JSON.stringify(sentryDsn)}`] : []),
       "--outfile",
       outfile,
     ],

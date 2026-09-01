@@ -2,6 +2,7 @@ import * as p from "@clack/prompts";
 import chalk from "chalk";
 import { Effect } from "effect";
 import { readConfig, writeConfig, type UserConfig } from "../lib/config";
+import { flushSentry, reportError } from "../lib/sentry";
 
 /**
  * Demande le prénom et le nom à l'utilisateur, puis enregistre la
@@ -47,15 +48,17 @@ export async function runConfigCommand(): Promise<void> {
   const spinner = p.spinner();
   spinner.start("Enregistrement de la configuration");
 
-  const success = await Effect.runPromise(
+  const result = await Effect.runPromise(
     Effect.match(writeConfig(config), {
-      onFailure: () => false,
-      onSuccess: () => true,
+      onFailure: (error) => ({ ok: false as const, error }),
+      onSuccess: () => ({ ok: true as const }),
     }),
   );
 
-  if (!success) {
+  if (!result.ok) {
     spinner.error("Échec de l'enregistrement de la configuration.");
+    reportError(result.error, { command: "config", errorType: result.error._tag });
+    await flushSentry();
     process.exit(1);
   }
 

@@ -6,6 +6,7 @@ import { join, resolve } from "node:path";
 import { buildArchive } from "../lib/archive";
 import { readConfig } from "../lib/config";
 import { toFolderName } from "../lib/naming";
+import { flushSentry, reportError } from "../lib/sentry";
 import { runConfigCommand } from "./config";
 
 async function pathIsDirectory(path: string): Promise<boolean> {
@@ -76,6 +77,8 @@ export async function runCreateCommand(inputPath: string): Promise<void> {
   if (!result.ok) {
     spinner.error("Échec de la création de l'archive.");
     p.log.error(chalk.red(String(result.error.cause ?? result.error)));
+    reportError(result.error, { command: "create", errorType: result.error._tag });
+    await flushSentry();
     process.exit(1);
   }
 

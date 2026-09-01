@@ -2,15 +2,15 @@ import { Effect } from "effect";
 import JSZip from "jszip";
 import { join } from "node:path";
 import { ArchiveWriteError, FileScanError, RenduIgnoreReadError } from "./errors";
-import { loadIgnoreRules } from "./renduignore";
+import { loadSelectionRules } from "./renduignore";
 
 /**
- * Liste les fichiers de `sourcePath` (chemins relatifs) qui ne sont pas
- * exclus par les règles `.rendu`.
+ * Liste les fichiers de `sourcePath` (chemins relatifs) à inclure dans
+ * l'archive : `.gitignore` exclut, `.rendu` (liste blanche) restreint.
  */
 export const listArchivableFiles = (sourcePath: string) =>
   Effect.gen(function* () {
-    const ig = yield* loadIgnoreRules(sourcePath);
+    const rules = yield* loadSelectionRules(sourcePath);
 
     const allFiles = yield* Effect.tryPromise({
       try: async () => {
@@ -24,7 +24,7 @@ export const listArchivableFiles = (sourcePath: string) =>
       catch: (cause) => new FileScanError({ cause }),
     });
 
-    return allFiles.filter((entry) => !ig.ignores(entry)).sort();
+    return allFiles.filter((entry) => rules.includes(entry)).sort();
   });
 
 export interface BuildArchiveOptions {
