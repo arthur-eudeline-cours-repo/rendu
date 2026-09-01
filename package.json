@@ -1,6 +1,6 @@
 {
   "name": "@arthur.eudeline/rendu",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI permettant aux étudiants de créer des archives ZIP de leurs rendus de travaux pratiques.",
   "type": "module",
   "license": "MIT",
@@ -27,11 +27,11 @@
     "test": "bun test"
   },
   "optionalDependencies": {
-    "@arthur.eudeline/rendu-darwin-arm64": "1.0.0",
-    "@arthur.eudeline/rendu-darwin-x64": "1.0.0",
-    "@arthur.eudeline/rendu-linux-arm64": "1.0.0",
-    "@arthur.eudeline/rendu-linux-x64": "1.0.0",
-    "@arthur.eudeline/rendu-win32-x64": "1.0.0"
+    "@arthur.eudeline/rendu-darwin-arm64": "1.1.0",
+    "@arthur.eudeline/rendu-darwin-x64": "1.1.0",
+    "@arthur.eudeline/rendu-linux-arm64": "1.1.0",
+    "@arthur.eudeline/rendu-linux-x64": "1.1.0",
+    "@arthur.eudeline/rendu-win32-x64": "1.1.0"
   },
   "devDependencies": {
     "@clack/prompts": "^1.7.0",

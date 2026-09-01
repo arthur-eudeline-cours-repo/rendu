@@ -17,11 +17,11 @@
         "zod": "^4.4.3",
       },
       "optionalDependencies": {
-        "@arthur.eudeline/rendu-darwin-arm64": "0.1.0",
-        "@arthur.eudeline/rendu-darwin-x64": "0.1.0",
-        "@arthur.eudeline/rendu-linux-arm64": "0.1.0",
-        "@arthur.eudeline/rendu-linux-x64": "0.1.0",
-        "@arthur.eudeline/rendu-win32-x64": "0.1.0",
+        "@arthur.eudeline/rendu-darwin-arm64": "1.0.0",
+        "@arthur.eudeline/rendu-darwin-x64": "1.0.0",
+        "@arthur.eudeline/rendu-linux-arm64": "1.0.0",
+        "@arthur.eudeline/rendu-linux-x64": "1.0.0",
+        "@arthur.eudeline/rendu-win32-x64": "1.0.0",
       },
     },
   },
@@ -31,6 +31,16 @@
     "@apm-js-collab/code-transformer-bundler-plugins": ["@apm-js-collab/code-transformer-bundler-plugins@0.7.4", "", { "dependencies": { "@apm-js-collab/code-transformer": "^0.18.1", "es-module-lexer": "^2.1.0", "magic-string": "^0.30.21", "module-details-from-path": "^1.0.4" } }, "sha512-nAfOeZPSUAQvJa1iFT/5oCrTm5YQhMMrfCNthNnaXHZiOQhu1KGuLoIx7HtbAi3wfwaBYLaICPIeenIaEwcXIg=="],
 
     "@apm-js-collab/tracing-hooks": ["@apm-js-collab/tracing-hooks@0.13.0", "", { "dependencies": { "@apm-js-collab/code-transformer": "^0.18.0", "debug": "^4.4.1", "module-details-from-path": "^1.0.4" } }, "sha512-mTvWz9rnQwx1U3h0XPTHaX7bgfkpipLLTQyjlC2cdhQpQEuoLT0AGzoydeoq2NxfEVv6fWOOETcSbb2nptleyw=="],
+
+    "@arthur.eudeline/rendu-darwin-arm64": ["@arthur.eudeline/rendu-darwin-arm64@1.0.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-Ab03msPH+LUpKBxkMp7AxjoS+Ow8bm7D2sl29pgHdAtPfLz4nkM6islTCvnH+JRiZ5au8VVi9GfaqwV9sPLteQ=="],
+
+    "@arthur.eudeline/rendu-darwin-x64": ["@arthur.eudeline/rendu-darwin-x64@1.0.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-VRw5iGt+C+snJk5Tuflj1Kc4wLmUthKGHA5ZT85DVxMx84JsBnYPBKdkXnjE/BTF/W70o92ELJgltxaUixbpKQ=="],
+
+    "@arthur.eudeline/rendu-linux-arm64": ["@arthur.eudeline/rendu-linux-arm64@1.0.0", "", { "os": "linux", "cpu": "arm64" }, "sha512-0KwHfJHOdRlDynmk+5qzx3SK3EYi9CL0Sqlv4PvPW4muHuP+wbrcH+8jVIo2MHL2oIfmBZK3pyFr3i0i73GW7w=="],
+
+    "@arthur.eudeline/rendu-linux-x64": ["@arthur.eudeline/rendu-linux-x64@1.0.0", "", { "os": "linux", "cpu": "x64" }, "sha512-b3aWchoo3atOyS/5CKR2ZWRcbQIuk4cJro+JYp7xVDxak0aDbrMvvmk7AHGsFykxCsPwQJve6kzBcRJOBVc8wg=="],
+
+    "@arthur.eudeline/rendu-win32-x64": ["@arthur.eudeline/rendu-win32-x64@1.0.0", "", { "os": "win32", "cpu": "x64" }, "sha512-YPvHOXBZB+AjxZjFsD9BRMIm/qp2ZhdHiD9hTYzPfqGF04xehRQw97qSVsecvkdAXRrGo0qF1r/eLlPwDYkSJg=="],
 
     "@clack/core": ["@clack/core@1.4.3", "", { "dependencies": { "fast-wrap-ansi": "^0.2.0", "sisteransi": "^1.0.5" } }, "sha512-/kr3UWNtdJfxZtPgDqUOmG2pvwlmcLGheex5yiZKdwbzZJxhV+HMNR9QNmyY5cGwTNV6LrR7Jtp+KjhUAP1qBQ=="],
 

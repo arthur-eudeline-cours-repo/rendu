@@ -1,6 +1,6 @@
 {
   "name": "@arthur.eudeline/rendu-darwin-x64",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Binaire natif de Rendu pour darwin/x64.",
   "files": [
     "bin"
