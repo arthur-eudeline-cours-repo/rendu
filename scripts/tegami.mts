@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 /**
- * Configuration Tegami (https://tegami.fuma-nama.dev) : gère le calcul du
- * numéro de version et le CHANGELOG.md à partir des commits conventionnels
+ * Configuration Tegami (https://tegami.fuma-nama.dev) : calcul du numéro de
+ * version et du CHANGELOG.md à partir des commits conventionnels
  * (`feat:` → minor, `fix:` → patch, `feat!:`/`BREAKING CHANGE` → major) ou de
  * fichiers de changelog déposés sous `.tegami/`.
  *
  * Tegami ne publie PAS ici : la publication multi-plateforme (les 5 sous-paquets
- * `@arthur.eudeline/rendu-<os>-<arch>` + le paquet racine, dans l'ordre) reste
- * gérée par `scripts/publish.ts`. Tegami se limite au versioning + changelog +
- * tag git, orchestré par `scripts/release.ts`.
+ * `@arthur.eudeline/rendu-<os>-<arch>` + le paquet racine, dans l'ordre) et la
+ * création du tag git sont gérées par `scripts/publish.ts`. On se limite donc à
+ * `tegami version` (bump + changelog) ; aucun plugin git/github n'est branché
+ * pour éviter que Tegami ne touche à `.git/config` ou ne crée des commits.
  *
  * Usage :
  *   node scripts/tegami.mts            # TUI : décrire un changement (crée .tegami/*.md)
@@ -18,7 +19,6 @@
  */
 import { tegami } from "tegami";
 import { runCli } from "tegami/cli";
-import { git } from "tegami/plugins/git";
 
 const ROOT_PACKAGE = "@arthur.eudeline/rendu";
 
@@ -26,10 +26,6 @@ const paper = tegami({
   // Le bump est déduit des commits conventionnels depuis le dernier tag git.
   // Un fichier .tegami/*.md reste possible pour forcer un niveau précis.
   conventionalCommits: true,
-  plugins: [
-    // Crée le tag git `@arthur.eudeline/rendu@x.y.z` (push uniquement en CI).
-    git(),
-  ],
   packages: {
     [ROOT_PACKAGE]: {},
   },

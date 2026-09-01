@@ -19,8 +19,23 @@ export class InvalidPathError extends Data.TaggedError("InvalidPathError")<{
   reason: string;
 }> {}
 
-export class RenduIgnoreReadError extends Data.TaggedError("RenduIgnoreReadError")<{
+export class RenduFileReadError extends Data.TaggedError("RenduFileReadError")<{
   cause: unknown;
+}> {}
+
+export class RenduFileParseError extends Data.TaggedError("RenduFileParseError")<{
+  cause: unknown;
+}> {}
+
+export class RenduFileWriteError extends Data.TaggedError("RenduFileWriteError")<{
+  cause: unknown;
+}> {}
+
+export class RenduRootMismatchError extends Data.TaggedError("RenduRootMismatchError")<{
+  /** Chemin `root` déclaré dans le `.rendu.yml`. */
+  root: string;
+  /** Dossier fourni par l'étudiant, dans lequel `root` est introuvable. */
+  sourcePath: string;
 }> {}
 
 export class FileScanError extends Data.TaggedError("FileScanError")<{
@@ -41,6 +56,10 @@ export type RenduError =
   | ConfigParseError
   | ConfigNotFoundError
   | InvalidPathError
-  | RenduIgnoreReadError
+  | RenduFileReadError
+  | RenduFileParseError
+  | RenduFileWriteError
+  | RenduRootMismatchError
+  | FileScanError
   | ArchiveWriteError
   | UpgradeError;

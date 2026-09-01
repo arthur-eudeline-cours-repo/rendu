@@ -1,6 +1,6 @@
 # Rendu
 
-**Rendu** est un outil en ligne de commande qui aide à préparer
+**Rendu** est un outil en ligne de commande qui aide les étudiants à préparer
 l'archive ZIP de leurs travaux pratiques d'informatique.
 
 À partir d'un dossier, `rendu` produit un fichier `NOM_Prenom.zip` qui, une fois
@@ -14,11 +14,12 @@ mémorisée dans votre dossier personnel.
   décompression (accents retirés, espaces remplacés par des tirets).
 - Le `.gitignore` du dossier est respecté : ce qu'il exclut n'entre jamais dans
   l'archive (il est prépondérant).
-- Fichier `.rendu` (même syntaxe que `.gitignore`) qui agit comme **liste
-  blanche** : s'il est présent, seuls les fichiers qu'il désigne sont archivés
-  (et jamais ceux exclus par `.gitignore`).
-- Toujours exclus : `.git/`, `.gitignore`, `.rendu`, `node_modules/`, `*.zip`,
-  `.DS_Store`.
+- Fichier **`.rendu.yml`** optionnel, à la racine du dossier archivé, avec trois
+  entrées facultatives : `root` (garde-fou), `include` (liste blanche) et
+  `exclude` (exclusions supplémentaires). Voir
+  [Choisir ce qui entre dans l'archive](#choisir-ce-qui-entre-dans-larchive).
+- Toujours exclus : `.git/`, `.gitignore`, `.rendu.yml`, `node_modules/`,
+  `*.zip`, `.DS_Store`.
 - Prompts interactifs et lisibles.
 
 ## Installation
@@ -70,22 +71,62 @@ inclus, en appliquant les mêmes règles que la création.
 
 ### Choisir ce qui entre dans l'archive
 
-Par défaut, tout le contenu du dossier est archivé, à l'exception de ce que son
-`.gitignore` exclut et des motifs toujours exclus.
+Par défaut, tout le contenu du dossier est archivé, à l'exception de ce que le
+`.gitignore` du dossier exclut et des motifs toujours exclus (`.git/`,
+`.gitignore`, `.rendu.yml`, `node_modules/`, `*.zip`, `.DS_Store`).
 
-Pour restreindre plus finement, placez un fichier `.rendu` à la racine du dossier
-archivé. Il suit la syntaxe de `.gitignore` mais fonctionne comme une **liste
-blanche** : seuls les fichiers correspondant à ses motifs sont archivés.
+Pour contrôler plus finement, placez un fichier **`.rendu.yml`** à la racine du
+dossier archivé. `rendu create` en génère un pré-rempli :
 
-```gitignore
-# Seuls ces éléments entrent dans l'archive
-src/
-rapport.pdf
-Makefile
+```bash
+rendu create          # crée ./.rendu.yml
+rendu create ./tp3    # crée ./tp3/.rendu.yml
+# alias : rendu generate | rendu init | rendu gen
 ```
 
-`.gitignore` reste prépondérant : un fichier qu'il exclut n'est pas archivé,
-même si `.rendu` le désigne.
+Si le fichier existe déjà, `rendu` demande confirmation avant de l'écraser.
+
+#### Format du `.rendu.yml`
+
+Les trois entrées sont **facultatives** :
+
+| Clé       | Rôle                                                                                                                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `root`    | Chemin (fichier ou dossier) qui **doit exister** dans le dossier fourni. Sinon `rendu` s'arrête : « ce n'est pas le bon dossier ». Simple garde-fou — sans effet sur le contenu réellement archivé. |
+| `include` | Liste de motifs façon `.gitignore`. Si elle est renseignée, elle agit comme **liste blanche** : seuls les fichiers correspondants sont archivés.                                                  |
+| `exclude` | Liste de motifs façon `.gitignore` retirés **en plus** du `.gitignore` et des motifs toujours exclus.                                                                                             |
+
+Fichier généré par `rendu create` :
+
+```yaml
+# Pointe vers un fichier à la racine du répertoire du rendu.
+# Si ce fichier n'existe pas, une erreur est générée.
+root: package.json
+
+# Fichiers à inclure dans le rendu (motifs façon .gitignore)
+include:
+  - "*"
+
+# Fichiers à ignorer pour le rendu (motifs façon .gitignore)
+exclude:
+  - node_modules
+  - vendor
+  - .git
+  - .next
+```
+
+#### Ordre de priorité
+
+Du plus fort au plus faible :
+
+1. Motifs toujours exclus **et** `.gitignore` du dossier — jamais archivés.
+2. `exclude` du `.rendu.yml` — retirés en plus.
+3. `include` du `.rendu.yml`, s'il est renseigné — ne conserve que les fichiers
+   correspondants.
+4. Sinon, tout ce qui a survécu aux étapes précédentes est archivé.
+
+Le `.gitignore` reste donc **prépondérant** : un fichier qu'il exclut n'est
+jamais archivé, même si `include` le désigne.
 
 ### Mettre à jour Rendu
 
@@ -98,13 +139,14 @@ Vérifie la dernière version publiée sur npm et, après confirmation, lance
 
 ## Commandes
 
-| Commande         | Description                                             |
-| ---------------- | ------------------------------------------------------- |
-| `rendu [path]`   | Crée l'archive du dossier indiqué (courant par défaut) |
+| Commande               | Description                                              |
+| ---------------------- | ------------------------------------------------------- |
+| `rendu [path]`         | Crée l'archive du dossier indiqué (courant par défaut) |
 | `rendu preview [path]` | Affiche l'arborescence des fichiers qui seraient inclus |
-| `rendu config`   | Définit ou met à jour votre prénom / nom               |
-| `rendu upgrade`  | Met à jour le CLI vers la dernière version             |
-| `rendu -v`       | Affiche la version installée                           |
+| `rendu create [path]`  | Génère un `.rendu.yml` pré-rempli (alias : `generate`, `init`, `gen`) |
+| `rendu config`         | Définit ou met à jour votre prénom / nom               |
+| `rendu upgrade`        | Met à jour le CLI vers la dernière version             |
+| `rendu -v`             | Affiche la version installée                           |
 
 ## Licence
 

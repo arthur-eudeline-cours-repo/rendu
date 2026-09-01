@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { Command } from "commander";
 import pkg from "../package.json" with { type: "json" };
+import { runArchiveCommand } from "./commands/archive";
 import { runConfigCommand } from "./commands/config";
 import { runCreateCommand } from "./commands/create";
 import { runPreviewCommand } from "./commands/preview";
@@ -36,6 +37,15 @@ program
   });
 
 program
+  .command("create")
+  .aliases(["generate", "init", "gen"])
+  .argument("[path]", "Dossier où créer le fichier .rendu.yml", ".")
+  .description("Crée un fichier .rendu.yml pré-rempli à adapter à votre rendu.")
+  .action(async (path: string) => {
+    await runCreateCommand(path);
+  });
+
+program
   .command("preview")
   .argument("[path]", "Chemin du dossier à prévisualiser", ".")
   .description("Affiche l'arborescence des fichiers qui seront inclus dans l'archive.")
@@ -54,7 +64,7 @@ program
   .argument("[path]", "Chemin du dossier à archiver", ".")
   .description("Crée une archive ZIP du dossier indiqué (dossier courant par défaut).")
   .action(async (path: string) => {
-    await runCreateCommand(path);
+    await runArchiveCommand(path);
   });
 
 try {

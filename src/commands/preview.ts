@@ -3,7 +3,8 @@ import chalk from "chalk";
 import { Effect } from "effect";
 import { stat } from "node:fs/promises";
 import { resolve } from "node:path";
-import { listArchivableFiles } from "../lib/archive";
+import { formatArchiveError, listArchivableFiles } from "../lib/archive";
+import { RENDU_FILE } from "../lib/rendufile";
 import { readConfig } from "../lib/config";
 import { toFolderName } from "../lib/naming";
 import { flushSentry, reportError } from "../lib/sentry";
@@ -107,7 +108,7 @@ export async function runPreviewCommand(inputPath: string): Promise<void> {
 
   if (!result.ok) {
     spinner.error("Échec de l'analyse du dossier.");
-    p.log.error(chalk.red(String(result.error.cause ?? result.error)));
+    p.log.error(chalk.red(formatArchiveError(result.error, inputPath)));
     reportError(result.error, { command: "preview", errorType: result.error._tag });
     await flushSentry();
     process.exit(1);
@@ -117,7 +118,7 @@ export async function runPreviewCommand(inputPath: string): Promise<void> {
 
   if (files.length === 0) {
     spinner.stop("Aucun fichier à inclure.");
-    p.outro(chalk.yellow("Vérifiez le contenu du dossier ou votre fichier .rendu."));
+    p.outro(chalk.yellow(`Vérifiez le contenu du dossier ou votre ${RENDU_FILE}.`));
     return;
   }
 

@@ -6,7 +6,12 @@ Rendu utilise au maximum les API Natives de Bun.
 
 Rendu permettra d'ajouter plusieurs fichiers et dossiers à une archive ZIP nommée selon le nom de l'utilisateur. Le prénom et nom seront demandés à l'initialisation et stoqué dans le dossier personnel de l'utilisateur via la librairie `@clack/prompts`.
 
-Rendu utilisera un système de fichier de configuration `.rendu` qui reprendra la même syntaxe que `.gitignore`
+Rendu utilisera un fichier de configuration d'archive `.rendu.yml`, placé à la racine du dossier fourni par l'étudiant. Il est optionnel et comporte trois entrées :
+- `root` : chemin (fichier ou dossier) qui doit exister dans le dossier fourni ; sinon Rendu refuse l'archive (« ce n'est pas le bon dossier »). Garde-fou uniquement : tout le dossier fourni est archivé.
+- `include` : liste de motifs façon `.gitignore` mais en liste blanche (si renseignée, seuls les fichiers correspondants sont archivés)
+- `exclude` : liste de motifs façon `.gitignore` exclus en plus
+
+Le `.gitignore` du dossier reste prépondérant sur `include`/`exclude`.
 
 Une archive ZIP crée par Rendu devra produire un dossier `NOM_Prenom/` avec le contenu de l'archive lors de sa décompression
 
@@ -26,6 +31,8 @@ Utilise commander.js en façade et redirige le plus vite possible le workflow ve
 # Commandes
 Chaque commande devra être bien documentée et ergonomique. Les commandes devront utiliser au maximum `@clack/prompts` pour logger un maximum d'information
 - `rendu config` permet de définir/mettre à jour les informations de configuration
+- `rendu create ./path` (alias `generate`, `init`, `gen`) génère un fichier `.rendu.yml` pré-rempli à adapter
+- `rendu preview ./path` affiche l'arborescence des fichiers qui seraient archivés
 - `rendu upgrade` permet de mettre à jour le CLI
 - `rendu ./path` permet de faire créer une archive de rendu pour chemin donné
 

@@ -1,16 +1,41 @@
 import { Effect } from "effect";
 import JSZip from "jszip";
 import { join } from "node:path";
-import { ArchiveWriteError, FileScanError, RenduIgnoreReadError } from "./errors";
-import { loadSelectionRules } from "./renduignore";
+import {
+  ArchiveWriteError,
+  FileScanError,
+  RenduFileParseError,
+  RenduFileReadError,
+  RenduRootMismatchError,
+} from "./errors";
+import {
+  assertRenduRoot,
+  buildSelectionRules,
+  loadRenduFile,
+  RENDU_FILE,
+} from "./rendufile";
+
+/** Union des erreurs pouvant survenir lors de la sélection/écriture d'une archive. */
+export type ArchiveError =
+  | ArchiveWriteError
+  | FileScanError
+  | RenduFileReadError
+  | RenduFileParseError
+  | RenduRootMismatchError;
 
 /**
  * Liste les fichiers de `sourcePath` (chemins relatifs) à inclure dans
- * l'archive : `.gitignore` exclut, `.rendu` (liste blanche) restreint.
+ * l'archive. Applique le `.rendu.yml` s'il existe : `root` sert de garde-fou,
+ * `exclude` retire des fichiers, `include` agit comme liste blanche. Le
+ * `.gitignore` du dossier reste prépondérant.
  */
-export const listArchivableFiles = (sourcePath: string) =>
+export const listArchivableFiles = (
+  sourcePath: string,
+): Effect.Effect<string[], ArchiveError> =>
   Effect.gen(function* () {
-    const rules = yield* loadSelectionRules(sourcePath);
+    const renduFile = yield* loadRenduFile(sourcePath);
+    yield* assertRenduRoot(sourcePath, renduFile);
+    const rules = yield* buildSelectionRules(sourcePath, renduFile);
 
     const allFiles = yield* Effect.tryPromise({
       try: async () => {
@@ -47,7 +72,7 @@ export interface BuildArchiveResult {
  */
 export const buildArchive = (
   options: BuildArchiveOptions,
-): Effect.Effect<BuildArchiveResult, ArchiveWriteError | FileScanError | RenduIgnoreReadError> =>
+): Effect.Effect<BuildArchiveResult, ArchiveError> =>
   Effect.gen(function* () {
     const files = yield* listArchivableFiles(options.sourcePath);
 
@@ -75,3 +100,36 @@ export const buildArchive = (
 
     return { files, outputPath: options.outputPath };
   });
+
+/**
+ * Message lisible à afficher à l'étudiant pour une erreur de sélection/archive.
+ * `inputPath` est le chemin tel qu'il l'a saisi (pour le contexte).
+ */
+export const formatArchiveError = (error: ArchiveError, inputPath: string): string => {
+  const formatRenduFileCause = (cause: unknown): string => {
+    const issues = (cause as { issues?: Array<{ path?: unknown[]; message?: string }> })
+      ?.issues;
+    if (Array.isArray(issues)) {
+      return issues
+        .map((issue) => {
+          const at = issue.path?.length ? `${issue.path.join(".")} : ` : "";
+          return `  - ${at}${issue.message ?? "valeur invalide"}`;
+        })
+        .join("\n");
+    }
+    return String(cause);
+  };
+
+  switch (error._tag) {
+    case "RenduRootMismatchError":
+      return (
+        `Le dossier « ${inputPath} » ne contient pas « ${error.root} », ` +
+        `déclaré dans ${RENDU_FILE}.\n` +
+        `Vous n'archivez probablement pas le bon dossier.`
+      );
+    case "RenduFileParseError":
+      return `${RENDU_FILE} est invalide :\n${formatRenduFileCause(error.cause)}`;
+    default:
+      return String(error.cause ?? error);
+  }
+};

@@ -2,6 +2,9 @@
   "name": "@arthur.eudeline/rendu-linux-x64",
   "version": "0.1.0",
   "description": "Binaire natif de Rendu pour linux/x64.",
+  "files": [
+    "bin"
+  ],
   "os": [
     "linux"
   ],

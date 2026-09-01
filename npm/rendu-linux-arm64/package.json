@@ -2,6 +2,9 @@
   "name": "@arthur.eudeline/rendu-linux-arm64",
   "version": "0.1.0",
   "description": "Binaire natif de Rendu pour linux/arm64.",
+  "files": [
+    "bin"
+  ],
   "os": [
     "linux"
   ],
