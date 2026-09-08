@@ -27,7 +27,7 @@ mémorisée dans votre dossier personnel.
 ## Installation
 
 ```bash
-npm install -g @arthur.eudeline/rendu
+npm install -g "@arthur.eudeline/rendu"
 ```
 
 Le bon binaire natif est installé automatiquement selon votre système
